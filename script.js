@@ -120,8 +120,11 @@ function crearRamo(ramoInfo) {
   ramoDiv.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("ramo", JSON.stringify({
       texto: ramoDiv.textContent,
-      aprobado: ramoDiv.classList.contains("aprobado")
+      aprobado: ramoDiv.classList.contains("aprobado"),
+      origenId: ramoDiv.parentElement.id
     }));
+    e.dataTransfer.effectAllowed = "move";
+    ramoDiv.classList.add("moviendo");
   });
 
   return ramoDiv;
@@ -150,9 +153,14 @@ function crearMalla() {
     div.addEventListener("drop", (e) => {
       e.preventDefault();
       const data = JSON.parse(e.dataTransfer.getData("ramo"));
-      const nuevoRamo = crearRamo(data);
-      div.appendChild(nuevoRamo);
-      guardarRamos();
+      const origen = document.getElementById(data.origenId);
+      const moviendo = origen.querySelector(".moviendo");
+
+      if (moviendo) {
+        moviendo.classList.remove("moviendo");
+        e.currentTarget.appendChild(moviendo);
+        guardarRamos();
+      }
     });
 
     container.appendChild(div);
